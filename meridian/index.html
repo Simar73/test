@@ -189,6 +189,11 @@ const PRODUCTS = [
   {id:"MFS-D40-SIC",part:"MFS-D40-SIC",desc:"Double Seal, SiC/SiC, 40mm",type:"Double",shaft:40,pressure:25,material:"SiC/SiC",price:390.00,stock:true,leadDays:10},
   {id:"MFS-D50-TC",part:"MFS-D50-TC",desc:"Double Seal, TC/TC, 50mm",type:"Double",shaft:50,pressure:30,material:"TC/TC",price:425.00,stock:true,leadDays:10},
   {id:"MFS-D65-TC",part:"MFS-D65-TC",desc:"Double Seal, TC/Carbon, 65mm",type:"Double",shaft:65,pressure:25,material:"TC/Carbon",price:462.00,stock:true,leadDays:14},
+  {id:"MFS-C40-SIC",part:"MFS-C40-SIC",desc:"Cartridge Seal, SiC/SiC, 40mm",type:"Cartridge",shaft:40,pressure:20,material:"SiC/SiC",price:610.00,stock:true,leadDays:12},
+  {id:"MFS-C50-TC",part:"MFS-C50-TC",desc:"Cartridge Seal, TC/Carbon, 50mm",type:"Cartridge",shaft:50,pressure:25,material:"TC/Carbon",price:670.00,stock:true,leadDays:12},
+  {id:"MFS-C65-SIC",part:"MFS-C65-SIC",desc:"Cartridge Seal, SiC/SiC, 65mm",type:"Cartridge",shaft:65,pressure:25,material:"SiC/SiC",price:745.00,stock:true,leadDays:16},
+  {id:"MFS-SP65-TC",part:"MFS-SP65-TC",desc:"Split Seal, SiC/SiC, 65mm",type:"Split",shaft:65,pressure:12,material:"SiC/SiC",price:915.00,stock:true,leadDays:18},
+  {id:"MFS-SP80-TC",part:"MFS-SP80-TC",desc:"Split Seal, TC/TC, 80mm",type:"Split",shaft:80,pressure:12,material:"TC/TC",price:975.00,stock:true,leadDays:18},
 ];
 let orderItems=[],selectedProd=null,activeFilter='',detailQty=1,confirmData={};
 function calcEstDelivery(days){const date=new Date();date.setDate(date.getDate()+days);return date.toLocaleDateString('en-GB',{weekday:'long',year:'numeric',month:'long',day:'numeric'});}
