@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Meridian Fluid Sealing – Partner Order System</title>
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Share+Tech+Mono&family=Exo+2:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root { --dark:#1e2b3a; --panel:#ffffff; --panel2:#f0f4f8; --border:#d0d9e6; --teal:#1a6fa8; --teal-dim:rgba(26,111,168,0.55); --teal-bg:rgba(26,111,168,0.07); --amber:#3d5fa0; --amber-dim:rgba(61,95,160,0.7); --red:#c0392b; --text:#2c3e50; --text-dim:#7f96b0; --text-bright:#1a2535; --glow:0 4px 24px rgba(26,111,168,0.10); }
+  *{box-sizing:border-box;margin:0;padding:0;} body{font-family:'Exo 2',sans-serif;background:#eef2f7;color:var(--text);min-height:100vh;overflow-x:hidden;}
+  #login-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#1a2e48 0%,#1a6fa8 60%,#2d8fb5 100%);}
+  .login-frame{background:#ffffff;border:none;border-top:4px solid var(--teal);box-shadow:0 12px 48px rgba(0,0,0,0.2);width:460px;padding:48px 44px;position:relative;clip-path:polygon(0 0,calc(100% - 20px) 0,100% 20px,100% 100%,0 100%);}
+  .login-frame::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--teal),#2d8fb5);}
+  .system-tag{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--teal-dim);letter-spacing:0.2em;margin-bottom:28px;}
+  .login-logo-row{display:flex;align-items:flex-end;gap:14px;margin-bottom:8px;}
+  .logo-hex{width:48px;height:48px;background:var(--teal-bg);border:2px solid var(--teal);clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);display:flex;align-items:center;justify-content:center;font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:700;color:var(--teal);}
+  .login-co-name{font-family:'Rajdhani',sans-serif;font-size:26px;font-weight:700;color:var(--text-bright);letter-spacing:0.08em;}
+  .login-co-sub{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--teal-dim);letter-spacing:0.12em;}
+  .login-divider{border:none;border-top:1px solid var(--border);margin:20px 0;}
+  .input-wrap{margin-bottom:16px;} .input-label{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--teal-dim);letter-spacing:0.15em;display:block;margin-bottom:6px;}
+  .sys-input{width:100%;background:#f7fafd;border:1.5px solid var(--border);color:var(--text);padding:10px 12px;font-family:'Share Tech Mono',monospace;font-size:14px;outline:none;transition:border-color 0.2s,box-shadow 0.2s;}
+  .sys-input:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(26,111,168,0.1);}
+  .auth-btn{width:100%;background:var(--teal);border:none;color:#fff;padding:12px;font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:700;letter-spacing:0.2em;cursor:pointer;transition:all 0.2s;margin-top:8px;}
+  .auth-btn:hover{background:#155988;}
+  .err-line{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--red);margin-bottom:12px;display:none;} .err-line::before{content:'// ';}
+  .login-hint-mono{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--text-dim);margin-top:14px;}
+  #app{display:flex;height:100vh;flex-direction:column;}
+  .header-bar{background:#1a2e48;border-bottom:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;padding:0 20px;height:50px;gap:20px;flex-shrink:0;}
+  .hb-logo{font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:700;color:#ffffff;letter-spacing:0.12em;display:flex;align-items:center;gap:8px;}
+  .hb-logo-sq{width:22px;height:22px;border:1.5px solid rgba(255,255,255,0.5);clip-path:polygon(50% 0%,100% 25%,100% 75%,50% 100%,0% 75%,0% 25%);display:flex;align-items:center;justify-content:center;font-size:8px;color:#fff;}
+  .hb-divider{width:1px;height:24px;background:rgba(255,255,255,0.15);}
+  .hb-status{font-family:'Share Tech Mono',monospace;font-size:10px;color:rgba(255,255,255,0.5);display:flex;align-items:center;gap:6px;}
+  .status-dot{width:6px;height:6px;border-radius:50%;background:#4ecb8d;animation:pulse 2s infinite;}
+  @keyframes pulse{0%,100%{opacity:1;}50%{opacity:0.4;}}
+  .hb-right{margin-left:auto;display:flex;align-items:center;gap:16px;font-size:12px;font-family:'Share Tech Mono',monospace;color:rgba(255,255,255,0.45);}
+  .hb-user{color:#a8c8f0;} .hb-logout{color:#f08080;cursor:pointer;font-size:11px;}
+  .tab-bar{background:var(--panel);border-bottom:1px solid var(--border);display:flex;padding:0 20px;flex-shrink:0;box-shadow:0 1px 4px rgba(0,0,0,0.06);}
+  .tab{font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:600;letter-spacing:0.1em;padding:10px 18px;color:var(--text-dim);cursor:pointer;border-bottom:2px solid transparent;transition:all 0.15s;text-transform:uppercase;}
+  .tab:hover{color:var(--teal);} .tab.active{color:var(--teal);border-bottom-color:var(--teal);}
+  .workspace{display:flex;flex:1;overflow:hidden;}
+  .left-panel{width:380px;flex-shrink:0;background:var(--panel);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;box-shadow:2px 0 8px rgba(0,0,0,0.04);}
+  .panel-header{padding:14px 16px;border-bottom:1px solid var(--border);font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--teal-dim);letter-spacing:0.15em;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;background:#f7fafd;}
+  .filter-row{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;gap:8px;flex-shrink:0;flex-wrap:wrap;background:#f7fafd;}
+  .ftag{font-family:'Rajdhani',sans-serif;font-size:12px;font-weight:600;letter-spacing:0.05em;padding:4px 10px;border:1px solid var(--border);color:var(--text-dim);cursor:pointer;transition:all 0.15s;background:white;}
+  .ftag:hover,.ftag.active{border-color:var(--teal);color:var(--teal);background:var(--teal-bg);}
+  .search-row{padding:10px 16px;border-bottom:1px solid var(--border);flex-shrink:0;background:#f7fafd;}
+  .search-row input{width:100%;background:white;border:1.5px solid var(--border);color:var(--text);padding:7px 10px;font-family:'Share Tech Mono',monospace;font-size:12px;outline:none;}
+  .search-row input:focus{border-color:var(--teal);}
+  .product-list{overflow-y:auto;flex:1;background:white;}
+  .prod-item{padding:12px 16px;border-bottom:1px solid #edf1f7;cursor:pointer;transition:background 0.15s;display:grid;grid-template-columns:1fr auto;gap:4px;}
+  .prod-item:hover{background:var(--teal-bg);} .prod-item.selected{background:rgba(26,111,168,0.08);border-left:3px solid var(--teal);}
+  .prod-pn{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--teal);}
+  .prod-desc{font-size:12px;color:var(--text);margin-top:2px;}
+  .prod-meta{font-size:10px;color:var(--text-dim);margin-top:3px;font-family:'Share Tech Mono',monospace;}
+  .prod-price{font-family:'Share Tech Mono',monospace;font-size:13px;color:var(--amber);text-align:right;font-weight:500;}
+  .prod-stock{font-size:9px;color:#2e8b57;text-align:right;margin-top:2px;font-family:'Share Tech Mono',monospace;}
+  .prod-stock.low{color:#c47d00;}
+  .right-panel{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+  .detail-pane{background:white;border-bottom:2px solid var(--border);padding:20px 24px;flex-shrink:0;min-height:180px;box-shadow:0 2px 6px rgba(0,0,0,0.04);}
+  .detail-pane-empty{display:flex;align-items:center;justify-content:center;height:100%;}
+  .empty-hint{font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--text-dim);}
+  .dp-row1{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;}
+  .dp-pn{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--teal-dim);margin-bottom:4px;}
+  .dp-name{font-family:'Rajdhani',sans-serif;font-size:20px;font-weight:700;color:var(--text-bright);letter-spacing:0.05em;}
+  .dp-price{font-family:'Rajdhani',sans-serif;font-size:26px;font-weight:700;color:var(--teal);}
+  .dp-spec-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+  .dp-spec{background:var(--teal-bg);border:1px solid rgba(26,111,168,0.2);padding:4px 10px;font-size:11px;font-family:'Share Tech Mono',monospace;color:var(--teal);}
+  .dp-add-row{display:flex;align-items:center;gap:12px;}
+  .qty-ctrl{display:flex;align-items:center;border:1.5px solid var(--border);background:white;}
+  .qty-ctrl button{background:transparent;border:none;color:var(--teal);width:28px;height:32px;font-size:16px;cursor:pointer;font-family:'Rajdhani',sans-serif;transition:background 0.15s;}
+  .qty-ctrl button:hover{background:var(--teal-bg);}
+  .qty-ctrl input{width:44px;background:transparent;border:none;border-left:1.5px solid var(--border);border-right:1.5px solid var(--border);color:var(--text);text-align:center;font-family:'Share Tech Mono',monospace;font-size:13px;padding:4px 0;outline:none;height:32px;-moz-appearance:textfield;}
+  .qty-ctrl input::-webkit-outer-spin-button,.qty-ctrl input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0;}
+  .dp-add-btn{background:var(--teal);border:none;color:white;padding:6px 20px;font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;letter-spacing:0.1em;cursor:pointer;transition:all 0.2s;}
+  .dp-add-btn:hover{background:#155988;}
+  .order-pane{flex:1;overflow-y:auto;padding:20px 24px;background:#eef2f7;}
+  .op-section{margin-bottom:24px;}
+  .op-title{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--teal-dim);letter-spacing:0.2em;margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+  .op-title::after{content:'';flex:1;height:1px;background:var(--border);}
+  .order-lines{width:100%;border-collapse:collapse;font-size:12px;background:white;}
+  .order-lines thead th{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--text-dim);letter-spacing:0.15em;text-align:left;padding:6px 8px;border-bottom:2px solid var(--border);background:#f7fafd;}
+  .order-lines tbody td{padding:8px;border-bottom:1px solid #edf1f7;}
+  .ol-pn{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--teal);}
+  .ol-qty{width:52px;background:var(--teal-bg);border:1px solid rgba(26,111,168,0.2);color:var(--text);text-align:center;padding:3px;font-family:'Share Tech Mono',monospace;font-size:12px;outline:none;}
+  .ol-del{background:transparent;border:none;color:var(--red);cursor:pointer;font-size:13px;}
+  .ol-sub{color:var(--amber);font-family:'Share Tech Mono',monospace;font-size:11px;font-weight:600;}
+  .form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .sf label{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--text-dim);letter-spacing:0.12em;display:block;margin-bottom:5px;}
+  .sf input{width:100%;background:white;border:1.5px solid var(--border);color:var(--text);padding:8px 10px;font-family:'Exo 2',sans-serif;font-size:13px;outline:none;transition:border-color 0.2s;}
+  .sf input:focus{border-color:var(--teal);box-shadow:0 0 0 3px rgba(26,111,168,0.08);}
+  .sf-full{grid-column:1/-1;}
+  .totals-row{display:flex;justify-content:space-between;font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-dim);margin-bottom:5px;}
+  .totals-row.grand{font-size:14px;color:var(--teal);border-top:2px solid var(--border);padding-top:8px;margin-top:4px;font-weight:700;}
+  .submit-btn{width:100%;background:var(--teal);border:none;color:white;padding:12px;font-family:'Rajdhani',sans-serif;font-size:16px;font-weight:700;letter-spacing:0.2em;cursor:pointer;margin-top:16px;transition:all 0.2s;}
+  .submit-btn:hover{background:#155988;}
+  .empty-order{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-dim);text-align:center;padding:20px;}
+  .conf-overlay{display:none;position:fixed;inset:0;background:rgba(30,43,58,0.55);backdrop-filter:blur(4px);z-index:300;align-items:center;justify-content:center;}
+  .conf-overlay.open{display:flex;}
+  .conf-frame{width:620px;background:white;border-top:4px solid var(--teal);box-shadow:0 24px 80px rgba(0,0,0,0.18);padding:40px 44px;clip-path:polygon(0 0,calc(100% - 20px) 0,100% 20px,100% 100%,20px 100%,0 calc(100% - 20px));animation:cfIn 0.3s ease;}
+  @keyframes cfIn{from{opacity:0;transform:scale(0.96);}to{opacity:1;transform:none;}}
+  .cf-sys{font-family:'Share Tech Mono',monospace;font-size:10px;color:var(--teal-dim);letter-spacing:0.2em;margin-bottom:20px;}
+  .cf-status{display:flex;align-items:center;gap:12px;margin-bottom:24px;}
+  .cf-icon{width:44px;height:44px;border:2px solid var(--teal);background:var(--teal-bg);display:flex;align-items:center;justify-content:center;font-size:20px;color:var(--teal);flex-shrink:0;}
+  .cf-oid{font-family:'Rajdhani',sans-serif;font-size:24px;font-weight:700;color:var(--teal);}
+  .cf-msg{font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-dim);margin-top:2px;}
+  .cf-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;}
+  .cf-cell{background:#f7fafd;border:1px solid var(--border);padding:10px 12px;}
+  .cf-cell-label{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--text-dim);letter-spacing:0.15em;margin-bottom:4px;}
+  .cf-cell-val{font-size:13px;color:var(--text-bright);}
+  .cf-items{width:100%;border-collapse:collapse;font-size:11px;margin-bottom:20px;}
+  .cf-items th{font-family:'Share Tech Mono',monospace;font-size:9px;color:var(--text-dim);text-align:left;padding:5px 8px;border-bottom:2px solid var(--border);letter-spacing:0.1em;background:#f7fafd;}
+  .cf-items td{padding:7px 8px;border-bottom:1px solid #edf1f7;}
+  .cf-items td:nth-child(1){font-family:'Share Tech Mono',monospace;color:var(--teal);}
+  .cf-items td:last-child{color:var(--amber);font-family:'Share Tech Mono',monospace;font-weight:600;}
+  .cf-btn-row{display:flex;gap:12px;}
+  .cf-save{background:var(--teal);border:none;color:white;padding:9px 22px;font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;letter-spacing:0.1em;cursor:pointer;}
+  .cf-save:hover{background:#155988;}
+  .cf-close{background:transparent;border:1.5px solid var(--border);color:var(--text-dim);padding:9px 22px;font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;letter-spacing:0.1em;cursor:pointer;}
+  ::-webkit-scrollbar{width:4px;} ::-webkit-scrollbar-track{background:#eef2f7;} ::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+</style>
+</head>
+<body>
+<div id="login-screen">
+  <div class="login-frame">
+    <div class="system-tag">// MERIDIAN_FLUID_SEALING // PARTNER_AUTH // v3.7.2</div>
+    <div class="login-logo-row"><div class="logo-hex">M</div><div><div class="login-co-name">Meridian Fluid Sealing</div><div class="login-co-sub">AUTHORIZED PARTNER ORDER SYSTEM</div></div></div>
+    <hr class="login-divider"/>
+    <div class="err-line" id="login-error">ACCESS_DENIED — Invalid credentials</div>
+    <div class="input-wrap"><label class="input-label">// PARTNER_ID</label><input class="sys-input" type="text" id="username" placeholder="enter_partner_id"/></div>
+    <div class="input-wrap"><label class="input-label">// AUTH_TOKEN</label><input class="sys-input" type="password" id="password" placeholder="••••••••••"/></div>
+    <button class="auth-btn" onclick="doLogin()">AUTHENTICATE →</button>
+    <div class="login-hint-mono">// partner_id: mfs_partner &nbsp;|&nbsp; auth_token: M3r1d!an77</div>
+  </div>
+</div>
+<div id="app">
+  <div class="header-bar">
+    <div class="hb-logo"><div class="hb-logo-sq">◆</div>MERIDIAN FLUID SEALING</div>
+    <div class="hb-divider"></div>
+    <div class="hb-status"><div class="status-dot"></div>SYSTEM ONLINE</div>
+    <div class="hb-right"><span class="hb-user">USER: DEMO_ACCOUNT</span><span>|</span><span class="hb-logout" onclick="logout()">LOGOUT</span></div>
+  </div>
+  <div class="tab-bar"><div class="tab active">Order Entry</div><div class="tab">Order History</div><div class="tab">Technical Docs</div><div class="tab">Account</div></div>
+  <div class="workspace">
+    <div class="left-panel">
+      <div class="panel-header"><span>// PRODUCT_BROWSER</span><span id="prod-count" style="color:var(--text-dim)">0 ITEMS</span></div>
+      <div class="filter-row">
+        <div class="ftag active" onclick="setFilter(this,'')">ALL</div>
+        <div class="ftag" onclick="setFilter(this,'Single')">SINGLE</div>
+        <div class="ftag" onclick="setFilter(this,'Double')">DOUBLE</div>
+        <div class="ftag" onclick="setFilter(this,'Cartridge')">CART.</div>
+        <div class="ftag" onclick="setFilter(this,'Split')">SPLIT</div>
+      </div>
+      <div class="search-row"><input type="text" id="prod-search" placeholder="search_parts..." oninput="filterProds()"/></div>
+      <div class="product-list" id="product-list"></div>
+    </div>
+    <div class="right-panel">
+      <div class="detail-pane" id="detail-pane"><div class="detail-pane-empty"><div class="empty-hint">// SELECT_PRODUCT_FROM_LIST</div></div></div>
+      <div class="order-pane">
+        <div class="op-section"><div class="op-title">ORDER_LINES</div><div id="order-lines-area"><div class="empty-order">// NO_ITEMS_QUEUED — add products from the browser</div></div></div>
+        <div class="op-section" id="order-form-section" style="display:none">
+          <div class="op-title">SHIPPING_&amp;_REFERENCE</div>
+          <div class="form-row">
+            <div class="sf"><label>// PO_REFERENCE</label><input type="text" id="of-po" placeholder="PO-XXXX-XXXX"/></div>
+            <div class="sf"><label>// EST_DELIVERY_DATE</label><div id="of-est-date" style="background:#f0f4f8;border:1.5px solid var(--border);padding:8px 10px;font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--teal);"></div><div id="of-lead-note" style="font-size:10px;color:var(--text-dim);margin-top:4px;font-family:'Share Tech Mono',monospace;"></div></div>
+            <div class="sf sf-full"><label>// DELIVERY_SITE_ADDRESS</label><input type="text" id="of-addr" placeholder="Site name and address"/></div>
+            <div class="sf"><label>// CONTACT_NAME</label><input type="text" id="of-contact" placeholder="Procurement contact"/></div>
+          </div>
+          <div style="margin-top:16px"><div id="totals-area"></div><button class="submit-btn" onclick="submitOrder()">▶ TRANSMIT ORDER</button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="conf-overlay" id="conf-overlay">
+  <div class="conf-frame">
+    <div class="cf-sys">// ORDER_CONFIRMATION // MERIDIAN_FLUID_SEALING</div>
+    <div class="cf-status"><div class="cf-icon">✓</div><div><div class="cf-oid" id="cf-oid">MFS-000000</div><div class="cf-msg">// ORDER_TRANSMITTED — PROCESSING INITIATED</div></div></div>
+    <div class="cf-grid" id="cf-grid"></div>
+    <table class="cf-items"><thead><tr><th>PART_NO</th><th>DESCRIPTION</th><th>QTY</th><th>UNIT</th><th>TOTAL</th></tr></thead><tbody id="cf-items-body"></tbody></table>
+    <div class="cf-btn-row"><button class="cf-save" onclick="saveRecord()">⬇ EXPORT_RECORD</button><button class="cf-close" onclick="closeConf()">CLOSE</button></div>
+  </div>
+</div>
+<script>
+const PRODUCTS = [
+  {id:"MFS-S25-SIC",part:"MFS-S25-SIC",desc:"Single Seal, SiC/SiC, 25mm",type:"Single",shaft:25,pressure:16,material:"SiC/SiC",price:142.00,stock:true,leadDays:7},
+  {id:"MFS-S30-TC",part:"MFS-S30-TC",desc:"Single Seal, TC/Carbon, 30mm",type:"Single",shaft:30,pressure:16,material:"TC/Carbon",price:159.00,stock:true,leadDays:7},
+  {id:"MFS-S40-SIC",part:"MFS-S40-SIC",desc:"Single Seal, SiC/SiC, 40mm",type:"Single",shaft:40,pressure:20,material:"SiC/SiC",price:194.00,stock:true,leadDays:8},
+  {id:"MFS-S50-AL",part:"MFS-S50-AL",desc:"Single Seal, Al2O3/Carbon, 50mm",type:"Single",shaft:50,pressure:16,material:"Al2O3/Carbon",price:168.00,stock:true,leadDays:12},
+  {id:"MFS-D40-SIC",part:"MFS-D40-SIC",desc:"Double Seal, SiC/SiC, 40mm",type:"Double",shaft:40,pressure:25,material:"SiC/SiC",price:390.00,stock:true,leadDays:10},
+  {id:"MFS-D50-TC",part:"MFS-D50-TC",desc:"Double Seal, TC/TC, 50mm",type:"Double",shaft:50,pressure:30,material:"TC/TC",price:425.00,stock:true,leadDays:10},
+  {id:"MFS-D65-TC",part:"MFS-D65-TC",desc:"Double Seal, TC/Carbon, 65mm",type:"Double",shaft:65,pressure:25,material:"TC/Carbon",price:462.00,stock:true,leadDays:14},
+  {id:"MFS-C40-SIC",part:"MFS-C40-SIC",desc:"Cartridge Seal, SiC/SiC, 40mm",type:"Cartridge",shaft:40,pressure:20,material:"SiC/SiC",price:610.00,stock:true,leadDays:12},
+  {id:"MFS-C50-TC",part:"MFS-C50-TC",desc:"Cartridge Seal, TC/Carbon, 50mm",type:"Cartridge",shaft:50,pressure:25,material:"TC/Carbon",price:670.00,stock:true,leadDays:12},
+  {id:"MFS-C65-SIC",part:"MFS-C65-SIC",desc:"Cartridge Seal, SiC/SiC, 65mm",type:"Cartridge",shaft:65,pressure:25,material:"SiC/SiC",price:745.00,stock:true,leadDays:16},
+  {id:"MFS-SP65-TC",part:"MFS-SP65-TC",desc:"Split Seal, SiC/SiC, 65mm",type:"Split",shaft:65,pressure:12,material:"SiC/SiC",price:915.00,stock:true,leadDays:18},
+  {id:"MFS-SP80-TC",part:"MFS-SP80-TC",desc:"Split Seal, TC/TC, 80mm",type:"Split",shaft:80,pressure:12,material:"TC/TC",price:975.00,stock:true,leadDays:18},
+];
+let orderItems=[],selectedProd=null,activeFilter='',detailQty=1,confirmData={};
+function calcEstDelivery(days){const date=new Date();date.setDate(date.getDate()+days);return date.toLocaleDateString('en-GB',{weekday:'long',year:'numeric',month:'long',day:'numeric'});}
+function doLogin(){
+  const u=document.getElementById('username').value.trim(),p=document.getElementById('password').value.trim();
+  if(u==='mfs_partner'&&p==='M3r1d!an77'){document.getElementById('login-screen').style.display='none';document.getElementById('app').style.display='flex';renderProductList(PRODUCTS);}
+  else{document.getElementById('login-error').style.display='block';}
+}
+document.addEventListener('keydown',e=>{if(e.key==='Enter')doLogin();});
+function logout(){document.getElementById('login-screen').style.display='flex';document.getElementById('app').style.display='none';}
+function setFilter(el,type){document.querySelectorAll('.ftag').forEach(f=>f.classList.remove('active'));el.classList.add('active');activeFilter=type;filterProds();}
+function filterProds(){
+  const q=(document.getElementById('prod-search').value||'').toLowerCase();
+  const filtered=PRODUCTS.filter(p=>(!activeFilter||p.type===activeFilter)&&(!q||p.part.toLowerCase().includes(q)||p.desc.toLowerCase().includes(q)));
+  document.getElementById('prod-count').textContent=filtered.length+' ITEMS';
+  renderProductList(filtered);
+}
+function renderProductList(list){
+  document.getElementById('product-list').innerHTML=list.map(p=>`<div class="prod-item ${selectedProd&&selectedProd.id===p.id?'selected':''}" onclick="selectProduct('${p.id}')">
+    <div><div class="prod-pn">${p.part}</div><div class="prod-desc">${p.desc}</div><div class="prod-meta">Ø${p.shaft}mm · ${p.pressure}bar · ${p.material}</div></div>
+    <div><div class="prod-price">$${p.price.toFixed(2)}</div><div class="prod-stock ${p.stock?'':'low'}">${p.stock?'■ IN_STOCK':'▲ LOW_STOCK'}</div></div>
+  </div>`).join('');
+}
+function selectProduct(id){
+  selectedProd=PRODUCTS.find(p=>p.id===id);detailQty=1;filterProds();
+  const dp=document.getElementById('detail-pane');
+  dp.innerHTML=`<div class="dp-row1"><div><div class="dp-pn">${selectedProd.part}</div><div class="dp-name">${selectedProd.desc}</div></div><div class="dp-price">$${selectedProd.price.toFixed(2)}</div></div>
+  <div class="dp-spec-row"><div class="dp-spec">Ø ${selectedProd.shaft} mm</div><div class="dp-spec">${selectedProd.pressure} bar max</div><div class="dp-spec">${selectedProd.material}</div><div class="dp-spec">${selectedProd.type} Design</div></div>
+  <div class="dp-add-row"><div class="qty-ctrl"><button onclick="adjQty(-1)">−</button><input type="number" id="detail-qty" value="1" min="1" onchange="detailQty=parseInt(this.value)||1"/><button onclick="adjQty(1)">+</button></div><button class="dp-add-btn" onclick="addToOrder()">+ ADD TO ORDER</button></div>`;
+}
+function adjQty(d){detailQty=Math.max(1,(detailQty||1)+d);const el=document.getElementById('detail-qty');if(el)el.value=detailQty;}
+function addToOrder(){
+  if(!selectedProd)return;
+  const qty=parseInt(document.getElementById('detail-qty')?.value)||1;
+  const ex=orderItems.find(i=>i.id===selectedProd.id);
+  if(ex)ex.qty+=qty;else orderItems.push({...selectedProd,qty});
+  renderOrderLines();
+}
+function renderOrderLines(){
+  const area=document.getElementById('order-lines-area'),formSection=document.getElementById('order-form-section');
+  if(orderItems.length===0){area.innerHTML='<div class="empty-order">// NO_ITEMS_QUEUED — add products from the browser</div>';formSection.style.display='none';return;}
+  formSection.style.display='block';
+  const maxLead=Math.max(...orderItems.map(i=>i.leadDays));
+  const estDateEl=document.getElementById('of-est-date');
+  if(estDateEl){estDateEl.textContent=calcEstDelivery(maxLead);const noteEl=document.getElementById('of-lead-note');if(noteEl)noteEl.textContent=`// LONGEST_LEAD_TIME: ${maxLead} DAYS`;}
+  area.innerHTML=`<table class="order-lines"><thead><tr><th>PART_NO</th><th>DESCRIPTION</th><th>QTY</th><th>UNIT_PRICE</th><th>LINE_TOTAL</th><th></th></tr></thead>
+  <tbody>${orderItems.map((item,i)=>`<tr><td class="ol-pn">${item.part}</td><td style="font-size:12px;color:var(--text)">${item.desc}</td>
+  <td><input class="ol-qty" type="number" min="1" value="${item.qty}" onchange="updateOLQty(${i},this.value)"/></td>
+  <td style="font-family:'Share Tech Mono',monospace;font-size:11px;color:var(--text-dim)">$${item.price.toFixed(2)}</td>
+  <td class="ol-sub">$${(item.price*item.qty).toFixed(2)}</td>
+  <td><button class="ol-del" onclick="removeOL(${i})">✕</button></td></tr>`).join('')}</tbody></table>`;
+  const sub=orderItems.reduce((s,i)=>s+i.price*i.qty,0),freight=110,total=sub+freight;
+  document.getElementById('totals-area').innerHTML=`<div class="totals-row"><span>// SUBTOTAL</span><span>$${sub.toFixed(2)}</span></div><div class="totals-row"><span>// FREIGHT_CHARGE</span><span>$${freight.toFixed(2)}</span></div><div class="totals-row grand"><span>// ORDER_TOTAL_USD</span><span>$${total.toFixed(2)}</span></div>`;
+}
+function updateOLQty(i,v){orderItems[i].qty=Math.max(1,parseInt(v)||1);renderOrderLines();}
+function removeOL(i){orderItems.splice(i,1);renderOrderLines();}
+function submitOrder(){
+  if(orderItems.length===0){alert('No items in order.');return;}
+  const po=document.getElementById('of-po').value.trim(),date=document.getElementById('of-est-date').textContent,addr=document.getElementById('of-addr').value.trim(),contact=document.getElementById('of-contact').value.trim();
+  if(!po||!addr){alert('Please complete required fields.');return;}
+  const oid='MFS-'+Date.now().toString().slice(-7),now=new Date().toLocaleString();
+  const sub=orderItems.reduce((s,i)=>s+i.price*i.qty,0),total=sub+110;
+  confirmData={oid,now,po,date,addr,contact,total,items:[...orderItems]};
+  document.getElementById('cf-oid').textContent=oid;
+  document.getElementById('cf-grid').innerHTML=`
+    <div class="cf-cell"><div class="cf-cell-label">ORDER_ID</div><div class="cf-cell-val" style="font-family:'Share Tech Mono',monospace;color:var(--teal)">${oid}</div></div>
+    <div class="cf-cell"><div class="cf-cell-label">TIMESTAMP</div><div class="cf-cell-val" style="font-family:'Share Tech Mono',monospace;font-size:12px">${now}</div></div>
+    <div class="cf-cell"><div class="cf-cell-label">PO_REFERENCE</div><div class="cf-cell-val">${po}</div></div>
+    <div class="cf-cell"><div class="cf-cell-label">EST_DELIVERY_DATE</div><div class="cf-cell-val">${date}</div></div>
+    <div class="cf-cell"><div class="cf-cell-label">DELIVERY_SITE</div><div class="cf-cell-val">${addr}</div></div>
+    <div class="cf-cell"><div class="cf-cell-label">ORDER_TOTAL</div><div class="cf-cell-val" style="color:var(--amber);font-family:'Share Tech Mono',monospace;font-size:16px">$${total.toFixed(2)}</div></div>`;
+  document.getElementById('cf-items-body').innerHTML=orderItems.map(i=>`<tr><td>${i.part}</td><td style="color:var(--text)">${i.desc}</td><td style="text-align:center">${i.qty}</td><td>$${i.price.toFixed(2)}</td><td>$${(i.price*i.qty).toFixed(2)}</td></tr>`).join('');
+  document.getElementById('conf-overlay').classList.add('open');
+  orderItems=[];renderOrderLines();
+}
+function closeConf(){document.getElementById('conf-overlay').classList.remove('open');}
+function saveRecord(){
+  const d=confirmData,rows=d.items.map(i=>`${i.part},${i.desc},${i.qty},$${i.price.toFixed(2)},$${(i.price*i.qty).toFixed(2)}`);
+  const csv=`Meridian Fluid Sealing — Order Record\nOrder ID:,${d.oid}\nTimestamp:,${d.now}\nPO Reference:,${d.po}\nDelivery Date:,${d.date}\nDelivery Site:,${d.addr}\nContact:,${d.contact||'—'}\nOrder Total:,$${d.total.toFixed(2)}\n\nPart Number,Description,Qty,Unit Price,Line Total\n${rows.join('\n')}`;
+  const blob=new Blob([csv],{type:'text/csv'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=d.oid+'_record.csv';a.click();
+}
+</script>
+</body>
+</html>
